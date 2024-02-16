@@ -1,6 +1,6 @@
 - 👋 Hi, I’m Sydney
-- 👀 I’m interested in health data storytelling
-- 🌱 I’m currently learning python and machine learning
+- 👀 I’m interested in data storytelling
+- 🌱 I’m currently learning python and R
 - 💞️ I’m looking to collaborate on insightful projects that challenge my technical ability
 <!---
 SydMWill/SydMWill is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
