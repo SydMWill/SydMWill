@@ -1,0 +1,105 @@
+---
+title: "Creative Sector Employment Data Visuals"
+author: "Sydney Williams"
+date: "2024-01-20"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#load excel file with separate sheets
+#may have to add full file path for it to run
+library(tidyverse)
+library(readxl)
+getwd()
+hrs_worked <- read_excel("/Users/sydney/R/creative sector q3.xlsx",
+                         sheet = "hrs worked")
+employment_rate <- read_excel("/Users/sydney/R/creative sector q3.xlsx",
+                              sheet = "employment rate")
+income_distribution <- read_excel("/Users/sydney/R/creative sector q3.xlsx",
+                                  sheet = "income distribution")
+```
+```{r}
+library(tidyverse)
+library(ggplot2)
+#use backticks when column name has space in it
+
+library(ggplot2)
+
+ggplot(data = hrs_worked, aes(x = age, y = `usual weekly hours worked`, color = factor(occupation))) +
+  geom_line(stat = "summary", fun = "mean", size = 0.5, alpha = 0.8) +  # Decrease line size
+  geom_errorbar(stat = "summary", width = 0.2) +
+  labs(title = "Usual Hours Worked per Week by Profession Over Age",
+       x = "Age",
+       y = "Usual Hours Worked per Week",
+       color = "Occupation") +
+  scale_color_brewer(palette = "Set2") +  # Change color palette
+  theme_minimal() +
+  theme(legend.position = "bottom", 
+        axis.text = element_text(size = 10), 
+        axis.title = element_text(size = 12, face = "bold"), 
+        plot.title = element_text(size = 14, face = "bold"))
+
+#Non-creatives have the most steady work hours, typically 40, from ages 25-50. 
+#Followed by architects, highest peak at about 46 hrs per week at age 28,
+#Journalist peak at about 46 hrs per week at age 45, and show similar hours at 55
+#Composers peak at about 57 hrs per week at age 28, and drop significantly as
+#age increases.Peak at 12hrs per week at age 51
+#Actors peak at about 41 hrs per week at age 46, lots of unsteadiness throughout
+#Musicians peak at about 33hrs per week at age 33
+#Overall, from this dataset non-creatives and architects are the most steady. 
+#Songwriters have the most extreme change, dropping 14 hours 
+#below the first lowest point  
+```
+```{r}
+#Calculate employment to population ratio
+employ_to_pop_ratio <- employment_rate$`count employed`/employment_rate$`count total (population)`
+#Graph employment to population ratio
+library(ggplot2)
+
+ggplot(data = employment_rate, aes(x = age, y = employ_to_pop_ratio, color = occupation)) +
+  geom_line(stat = "summary", fun = "mean", size = 1, alpha = 0.8) + # Adjusting line aesthetics
+  facet_wrap(~occupation, scales = "free_y", ncol = 2) + # Facet by occupation
+  theme_minimal() + # Custom theme
+  labs(x = "Age",
+       y = "Employment to Population Ratio",
+       title = "Employment to Population Ratio by Occupation") +
+  theme(legend.position = "bottom", #Adjusting legend position
+        axis.text = element_text(size = 10),  # Adjusting axis text size
+        axis.title = element_text(size = 12, face = "bold"),  # Adjusting axis title size and style
+        plot.title = element_text(size = 14, face = "bold"))  # Adjusting plot title size and styl
+  
+#Actors have very low employment rates between ages of 35-50, and have the lowest
+#rates overall. Most of the sectors have employment rates consistently at or above %60
+#Musicians and songwriters have similar employment rates over time.
+```
+```{r}
+
+#reshape data
+income_distribution <- tidyr::gather(income_distribution, key = "income_type", value = "income_value", -'...2')
+
+# Create a bar plot
+custom_colors <- c("blue", "darkgreen", "orange", "purple", "black", "yellow")
+ggplot(income_distribution, aes(x = `...2`, y = income_value, fill = income_type)) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.5) +
+  labs(title = "Income Distribution by Occupation",
+       x = "Occupation",
+       y = "Income",
+       fill = "Income Type") +
+  scale_fill_manual(values = custom_colors) +  
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Superstar architects, are an extreme outlier in the 90th #percentile, making as much as $250,000 per year, which is more than $100,000
+#above the other 90th percentiles in the other occupations. They are able to 
+#scale easier than other occupations.
+```
+
+
+```{r}
+
+
+```
+
+
