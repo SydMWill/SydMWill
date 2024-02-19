@@ -1,0 +1,55 @@
+---
+title: "Conflict in Afghanistan"
+author: "Sydney Williams"
+date: "2024-02-18"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(foreign)
+library(ggplot2)
+library(RColorBrewer)
+getwd()
+bombs <- read.csv("WRIGHT_weekly-ts.csv")
+
+#Generate a clear variable
+bombs$clear_rate = bombs$IED_FC/bombs$IED_events
+
+#Make a time series plot (by week) of the number of IED events (IED_explosions+ IED_neutralizations)
+
+#Basic plot
+ggplot(bombs, aes(week_of_conflict, IED_events)) +geom_line()
+
+#Regression; regress clear_rate (dependent variable) on week_of_conflict (independent variable)
+
+regression <- lm(clear_rate ~ week_of_conflict + IED_events, bombs)
+
+summary(regression)
+#Intercept suggest that when week_of_conflict and IED_events are held constant, the clear_rate is ~0.5693. For each unit increase in week_of_conflict, the clear_rate decreases.As conflict persists or time goes on, the success rate of clearing the area from bombs will decline. With each unit increase in IED_events, the clear_rate increases. As more IED events occur, the success rate of clearing the area increase. This could mean when there are more IED events, more efforts are made to clear the area, leading to a higher clear rate than the time of the confllict.
+#Using this regressions tests to see the relationship between the week_of_conflict and the clear_rate. Also the relationship between IED_events and clear_rate. Both p-values are below 0.05 showing that both are statistically significant predictors of clear_rate, there is a relationship here. However, the R-squared value, or best fit, is only 6%, indicating that it is not the best at explaining the variation in clear_rate.
+
+#Time series plot by clear rate
+ggplot(bombs, aes(week_of_conflict, clear_rate)) + geom_line()
+#The overall trend of this plot shows that as the weeks of conflict persist, the clear rate decreases. Major peaks could mean there was a significant event during that week that could have impacted the clearing of an area more.
+
+#Make a plot of the local polynomial function where clear_rate (dependent variable) is regressed on week_of_conflict (independent variable).
+  
+ggplot(bombs, aes(week_of_conflict, clear_rate)) + geom_point() + geom_smooth(method= 'loess', formula = 'y ~ x', span = 0.25)
+#The LOESS line is used to show the general trend of the plot. Each dot or point is data collected.
+
+## Version 2: More advanced plots
+ggplot(bombs, aes(week_of_conflict, IED_events)) + geom_line() + theme_light() +
+xlab("Week of Conflict") + ylab("Number of IED Events (Total)")
+#This plot shows that as time persists, the number of IED events increases, eventually decreasing the further the weeks get away from week 0
+
+ggplot(bombs, aes(week_of_conflict, clear_rate)) + geom_line() + theme_light() +
+xlab("Week of Conflict") + ylab("Clear Rate (%)") + geom_area()
+```
+
+
+
+```
+
+
